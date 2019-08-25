@@ -47,7 +47,7 @@ if !exists("c_no_cformat")
 endif
 
 " cCppString: same as cString, but ends at end of line
-if s:ft ==# "cpp" && !exists("cpp_no_cpp11") && !exists("c_no_cformat")
+if (s:ft ==# "cpp" || s:ft ==# "objcpp") && !exists("cpp_no_cpp11") && !exists("c_no_cformat")
   " ISO C++11
   syn region	cString		start=+\(L\|u\|u8\|U\|R\|LR\|u8R\|uR\|UR\)\="+ skip=+\\\\\|\\"+ end=+"+ contains=cSpecial,cFormat,@Spell extend
   syn region 	cCppString	start=+\(L\|u\|u8\|U\|R\|LR\|u8R\|uR\|UR\)\="+ skip=+\\\\\|\\"\|\\$+ excludenl end=+"+ end='$' contains=cSpecial,cFormat,@Spell
@@ -79,7 +79,7 @@ syn match	cSpecialCharacter display "L\='\\\o\{1,3}'"
 syn match	cSpecialCharacter display "'\\x\x\{1,2}'"
 syn match	cSpecialCharacter display "L'\\x\x\+'"
 
-if (s:ft ==# "c" && !exists("c_no_c11")) || (s:ft ==# "cpp" && !exists("cpp_no_cpp11"))
+if (s:ft ==# "c" && !exists("c_no_c11")) || ((s:ft ==# "cpp" || s:ft ==# "objcpp") && !exists("cpp_no_cpp11"))
   " ISO C11 or ISO C++ 11
   if exists("c_no_cformat")
     syn region	cString		start=+\%(U\|u8\=\)"+ skip=+\\\\\|\\"+ end=+"+ contains=cSpecial,@Spell extend
@@ -122,7 +122,7 @@ endif
 " But avoid matching <::.
 syn cluster	cParenGroup	contains=cParenError,cIncluded,cSpecial,cCommentSkip,cCommentString,cComment2String,@cCommentGroup,cCommentStartError,cUserLabel,cBitField,cOctalZero,@cCppOutInGroup,cFormat,cNumber,cFloat,cOctal,cOctalError,cNumbersCom
 if exists("c_no_curly_error")
-  if s:ft ==# 'cpp' && !exists("cpp_no_cpp11")
+  if (s:ft ==# "cpp" || s:ft ==# "objcpp") && !exists("cpp_no_cpp11")
     syn region	cParen		transparent start='(' end=')' contains=ALLBUT,@cParenGroup,cCppParen,@cStringGroup,@Spell
     " cCppParen: same as cParen but ends at end-of-line; used in cDefine
     syn region	cCppParen	transparent start='(' skip='\\$' excludenl end=')' end='$' contained contains=ALLBUT,@cParenGroup,cParen,cString,@Spell
@@ -136,7 +136,7 @@ if exists("c_no_curly_error")
     syn match	cErrInParen	display contained "^[{}]\|^<%\|^%>"
   endif
 elseif exists("c_no_bracket_error")
-  if s:ft ==# 'cpp' && !exists("cpp_no_cpp11")
+  if (s:ft ==# "cpp" || s:ft ==# "objcpp") && !exists("cpp_no_cpp11")
     syn region	cParen		transparent start='(' end=')' contains=ALLBUT,@cParenGroup,cCppParen,@cStringGroup,@Spell
     " cCppParen: same as cParen but ends at end-of-line; used in cDefine
     syn region	cCppParen	transparent start='(' skip='\\$' excludenl end=')' end='$' contained contains=ALLBUT,@cParenGroup,cParen,cString,@Spell
@@ -150,7 +150,7 @@ elseif exists("c_no_bracket_error")
     syn match	cErrInParen	display contained "[{}]\|<%\|%>"
   endif
 else
-  if s:ft ==# 'cpp' && !exists("cpp_no_cpp11")
+  if (s:ft ==# "cpp" || s:ft ==# "objcpp") && !exists("cpp_no_cpp11")
     syn region	cParen		transparent start='(' end=')' contains=ALLBUT,@cParenGroup,cCppParen,cErrInBracket,cCppBracket,@cStringGroup,@Spell
     " cCppParen: same as cParen but ends at end-of-line; used in cDefine
     syn region	cCppParen	transparent start='(' skip='\\$' excludenl end=')' end='$' contained contains=ALLBUT,@cParenGroup,cErrInBracket,cParen,cBracket,cString,@Spell
@@ -398,7 +398,7 @@ endif
 syn cluster	cLabelGroup	contains=cUserLabel
 syn match	cUserCont	display "^\s*\zs\I\i*\s*:$" contains=@cLabelGroup
 syn match	cUserCont	display ";\s*\zs\I\i*\s*:$" contains=@cLabelGroup
-if s:ft ==# 'cpp'
+if (s:ft ==# "cpp" || s:ft ==# "objcpp")
   syn match	cUserCont	display "^\s*\zs\%(class\|struct\|enum\)\@!\I\i*\s*:[^:]"me=e-1 contains=@cLabelGroup
   syn match	cUserCont	display ";\s*\zs\%(class\|struct\|enum\)\@!\I\i*\s*:[^:]"me=e-1 contains=@cLabelGroup
 else
